@@ -117,11 +117,20 @@ class AddressBook(UserDict):
                 continue
 
             bday: date = record.birthday.value
-            bday_this_year = date(today.year, bday.month, bday.day)
+            # в поточному році
+            try:
+                bday_this_year = date(today.year, bday.month, bday.day)
+            except ValueError:
+                # якщо 29.02 рік не вискоксний, беремо 28.02
+                bday_this_year = date(today.year, 2,28)
 
             # якщо вже минув у цьому році - беремо наступний рік
             if bday_this_year < today:
-                bday_this_year = date(today.year +1, bday.month, bday.day)
+                next_year = today.year + 1
+                try:
+                    bday_this_year = date(today.year +1, bday.month, bday.day)
+                except ValueError:
+                    bday_this_year = date(next_year, 2,28)
 
             # якщо входить у вікно найближчих днів
             if today <= bday_this_year <= end_date:
